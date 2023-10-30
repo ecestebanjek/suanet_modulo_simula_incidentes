@@ -1,0 +1,4 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+env_sim_inc
+data/incidentes_sdm_2019_2023.csv
