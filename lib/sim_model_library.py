@@ -13,6 +13,7 @@ import folium
 import time
 import plotly.express as px
 import plotly.figure_factory as ff
+import os
 
 from streamlit_folium import st_folium, folium_static
 import streamlit as st
@@ -123,8 +124,8 @@ class incident_plan_simulation:
         self.gogev = {}
         self.eventos_por_atender = {}
         self.eventos_atendidos = {}
-        self.zat = gpd.read_file(r"data\ZAT\zat.shp")
-        self.matriz =pd.read_feather(r"data\origen_destino")
+        self.zat = gpd.read_file(os.path.join("data","ZAT","zat.shp"))
+        self.matriz =pd.read_feather(os.path.join("data","origen_destino"))
         self.dist_unidades = list()
         
     
