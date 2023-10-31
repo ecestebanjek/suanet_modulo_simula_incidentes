@@ -17,6 +17,7 @@ import time
 import plotly.express as px
 from streamlit_folium import st_folium, folium_static
 from PIL import Image
+import os
 
 ### Libreria de simulaciones
 import lib.sim_model_library as sim_model
@@ -77,21 +78,24 @@ with st.form("my_form"):
 if submitted:
     ###################### DATA
     #data = gpd.read_file("../../TRATAMIENTO DATA/outs/incidentes_sdm_2019_2023.geojson", encoding='latin-1')
-    with st.spinner('Wait for it...'):
+    with st.spinner('Corriendo simulación...'):
         ## Importar datos - Futura conexión DBOracle
-        data = pd.read_feather(r"data\incidentes_sdm_2022_2023")
+        #data = pd.read_feather(r"data\incidentes_sdm_2022_2023")
+        data = pd.read_feather(os.path.join("data", "incidentes_sdm_2022_2023"))
         data = data[['LATITUDE','LONGITUDE','INCIDENT_TIME']]
         data['INCIDENT_TIME'] = pd.to_datetime(data['INCIDENT_TIME'])
 
         ## Esta es fija y requiere data de barrios en la carpeta
-        barrios = gpd.read_file(r"data\barrios-bogota.zip")
+        # barrios = gpd.read_file(r"data\barrios-bogota.zip")
+        barrios = gpd.read_file(os.path.join("data","barrios-bogota.zip"))
         barrios = barrios.to_crs(epsg=4326)
         quitar = [301,331,695,763, 762, 715,710, 1073, 829, 1055, 830, 1145,744,322,372,394, 1067,56,710, 1085, 731, 1070,1102,1106, 1104, 260, 738, 1101, 114,684, 64,40,955,413,361,1149,814,359, 422,711,705,267,310,1110,678,680,1081,161,1095,691,68,689,1110,678,578,15,313,870,745,248,989,658,284,849,497,42,639,928,551,837,434,940,550,9,283,143,535,379,526,136,945 ]
         barrios = barrios[~barrios.index.isin(quitar)]
         bogota_shape = gpd.GeoDataFrame(geometry=[cascaded_union(barrios['geometry'])], crs=barrios.crs)
         
         ## Areas policia
-        areas_pol = gpd.read_file(r"data/shp_areas_pol.shp.zip")
+        # areas_pol = gpd.read_file(r"data/shp_areas_pol.shp.zip")
+        areas_pol = gpd.read_file(os.path.join("data","shp_areas_pol.shp.zip"))
         bogota_shape = bogota_shape.overlay(areas_pol, how='intersection',keep_geom_type=False)
         
         ### INICIO A CORRER EL MODELO
