@@ -520,10 +520,10 @@ class incident_plan_simulation:
         rep.dropna(subset='Tiempo de viaje a atención', inplace=True)
         #plt.hist(rep.t_rta, bins = 100)
         #fig = px.histogram(rep, x="t_rta", nbins=20,labels={'x':'Tiempo de respuesta simulado', 'y':'Cantidad'},title='Histograma de tiempo de respuesta simulado',)
-        fig = ff.create_distplot([rep['Tiempo de viaje a atención'], rep['Tiempo de respuesta (supuesto asinación 10 mins)']], ['Tiempos de viaje simulados','Tiempos de respuesta con supuesto de 10 mins en asignación'],bin_size=.2, show_rug=False)
+        fig = ff.create_distplot([rep['Tiempo de viaje a atención'], rep['Tiempo de respuesta (supuesto t-asignación 10 mins)']], ['Tiempos de viaje simulados','Tiempos de respuesta con supuesto de 10 mins en asignación'],bin_size=.2, show_rug=False)
         fig.update_layout(title_text='Distribución de tiempos de atención calculados')
         col = st.columns([1,2])
-        col[0].write(rep[['Tiempo de viaje a atención','Tiempo de respuesta (supuesto asinación 10 mins)']].describe())
+        col[0].write(rep[['Tiempo de viaje a atención','Tiempo de respuesta (supuesto t-asignación 10 mins)']].describe())
         col[1].plotly_chart(fig, use_container_width=True)
         #return figure
     
