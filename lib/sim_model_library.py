@@ -515,7 +515,7 @@ class incident_plan_simulation:
         rep = pd.DataFrame([ids, tiempos]).T
         rep.columns = ['ids','Tiempo de viaje a atención']
         rep['Tiempo de viaje a atención'] =  pd.to_numeric(rep['Tiempo de viaje a atención'])
-        rep['Tiempo de respuesta (supuesto asinación 10 mins)'] = rep['Tiempo de viaje a atención'] + 10
+        rep['Tiempo de respuesta (supuesto t-asignación 10 mins)'] = rep['Tiempo de viaje a atención'] + 10
         # st.write(rep[['t_rta','t_rta_tot']].describe())
         rep.dropna(subset='Tiempo de viaje a atención', inplace=True)
         #plt.hist(rep.t_rta, bins = 100)

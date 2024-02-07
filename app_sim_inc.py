@@ -89,8 +89,8 @@ with st.expander("PARÁMETROS DE SIMULACIÓN", expanded=st.session_state.expande
                     - Los desplazamientos pueden ser lineales o a traves de malla de tiempo de respuesta''')
         header1 = st.columns([1,1])
         row1 = st.columns([1,1])
-        fecha_inicio = row1[0].date_input("Define la fecha de inicio de la simulación", min_value=dt.datetime(2022,1,1), value=dt.datetime(2022,7,6))#,max_value=dt.datetime(2022,12,31))
-        fecha_fin = row1[1].date_input("Define la fecha de fin de la simulación", min_value=dt.datetime(2022,1,1), value=dt.datetime(2022,7,8))#, max_value=dt.datetime(2022,12,31))
+        fecha_inicio = row1[0].date_input("Define la fecha de inicio de la simulación", min_value=dt.datetime(2024,1,1), value=datetime.today() - timedelta(days=8))#,max_value=dt.datetime(2022,12,31))
+        fecha_fin = row1[1].date_input("Define la fecha de fin de la simulación", min_value=dt.datetime(2024,1,1), value=datetime.today() - timedelta(days=1))#, max_value=dt.datetime(2022,12,31))
         row4 = st.columns([1,1])
         dist_unidades = row4[0].selectbox("Distribución de las unidades", options=("Uniforme","Optimo"))
         dias = row4[1].multiselect("Selecciona los dias de la semana entre las fechas elegidas para simular incidentes",['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo','Todos los dias'], default='Todos los dias', help='Este campo filtra los dias entre las fehcas de inicio y fin seleccionadas arriba. Se pueden seleccionar una o varias',placeholder='Seleccione una o varias opciones')
@@ -143,13 +143,13 @@ def consult_data(fecha_inicio0, fecha_fin0):
     dialect = 'oracle'
     sql_driver = 'oracledb'
     ## ORACLE SDM ## hacer esto con variables de entorno
-    un = 'BITACORA'
-    host = "172.30.6.21"
-    port = "1521"
-    sn = "BITACORA"
-    pw = 'B1tac0r2023*'
+    un = os.environ["UNSN"]
+    host = os.environ["HOST"]
+    port = os.environ["PORT"]
+    sn = os.environ["UNSN"]
+    pw = os.environ["P"]
     try:
-        if (fecha_fin0-fecha_inicio0).days <5:
+        if (fecha_fin0-fecha_inicio0).days <8:
             to_engine: str = dialect + '+' + sql_driver + '://' + un + ':' + pw + '@' + host + ':' + str(port) + '/?service_name=' + sn
             connection = sa.create_engine(to_engine)
             query = f"SELECT INCIDENTNUMBER, LATITUDE, LONGITUDE, INCIDENTDATE FROM MV_INCIDENT WHERE INCIDENTDATE BETWEEN TO_TIMESTAMP('{fecha_inicio}', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('{fecha_fin}', 'YYYY-MM-DD HH24:MI:SS')"
@@ -161,7 +161,7 @@ def consult_data(fecha_inicio0, fecha_fin0):
             st.info(str(test_df.shape[0]) + " incidentes consultados desde base de datos entre " + str(test_df.INCIDENT_TIME.min()) + " y " + str(test_df.INCIDENT_TIME.max()))
             return test_df
         else:
-            st.error("Por favor seleccione una cantidad de dias mayor a 1 y menor a 5.")
+            st.error("Por favor seleccione una cantidad de dias mayor a 1 y menor a 8.")
             return pd.DataFrame(columns = ['LATITUDE','LONGITUDE','INCIDENT_TIME'])
     except:
             data = pd.read_feather(os.path.join("data", "incidentes_sdm_2022_2023"))
@@ -247,7 +247,7 @@ if st.session_state.enviar:
             if selected == "Distribución de unidades simulada":
                 contract()
                 sim1 = st.session_state['sim']
-                st.markdown("## 1. Mapa de distribución de unidades con ubicación -"+str(parametros['ubicacion_unidades'])+"-, y distribución -"+str(parametros['distribucion_unidades']+" y el centroide de los eventos en las fechas ingresadas:"))
+                st.markdown("## 1. Mapa de distribución de unidades con ubicación -"+str(parametros['ubicacion_unidades'])+"-, y distribución -"+str(parametros['distribucion_unidades']+"- y el centroide de los eventos en las fechas ingresadas:"))
                 cols = st.columns([2,1])
                 mapa, tabla = sim1.distribuir_unidades(graficar_dist=True)
                 cols[0].plotly_chart(mapa, use_container_width=True)
